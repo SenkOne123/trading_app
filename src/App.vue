@@ -16,7 +16,8 @@ export default class App extends Vue {}
 
 <style lang="scss">
 #app {
-  color: #3b5dab;
+  color: #1F1F1F;
   margin-top: 60px;
+  margin-bottom: 60px;
 }
 </style>
