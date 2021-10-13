@@ -11,12 +11,12 @@
         <ui-textfield outlined v-model="password"></ui-textfield>
       </div>
       <div class="form-sections">
-        <ui-button style="color: #1F1F1F;" outlined class="login__button">Get Accounts</ui-button>
+        <ui-button @click="getUserAccounts" style="color: #1F1F1F;" outlined class="login__button">Get Accounts</ui-button>
       </div>
     </div>
     <div class="form-sections">
-      <h6 class="text_headers">Выбрать аккаунт: </h6>
-      <ui-select></ui-select>
+      <h6 class="text_headers">Количество аккаунтов: {{accounts.length}} </h6>
+      <ui-select outlined :options="options"></ui-select>
     </div>
     <div class="form-sections">
 
@@ -27,6 +27,7 @@
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
 import Account from "src/models/Account";
+import AccountsApiService from "@/api/AccountsApiService";
 
 @Options({})
 export default class MainLayout extends Vue {
@@ -34,6 +35,24 @@ export default class MainLayout extends Vue {
   password = "";
   loading = true;
   accounts: Account[] = [];
+  options: any[] = [{
+    label: 'SOSAT SYUDA',
+    value: 123,
+  }]
+  accountsApiService: AccountsApiService = new AccountsApiService()
+
+  getUserAccounts() {
+    this.accountsApiService.getAccounts().then(accounts => {
+      this.accounts = accounts
+      for (let account of this.accounts) {
+        this.options.push({
+          label: account.code.toString(),
+          value: account
+        })
+      }
+    }).catch(err => console.log(err))
+  }
+
 }
 </script>
 

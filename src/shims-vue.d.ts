@@ -6,3 +6,4 @@ declare module '*.vue' {
 }
 declare module 'balm-ui'
 declare module 'balm-ui-plus'
+declare module 'vuex'
