@@ -6,7 +6,6 @@
 import { Options, Vue } from "vue-class-component";
 import MainLayout from "@/components/MainLayout.vue";
 import Vuex from "vuex";
-import { store } from "@/store/store";
 
 // Vue.use(Vuex)
 

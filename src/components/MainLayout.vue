@@ -15,10 +15,15 @@
       </div>
     </div>
     <div class="form-sections">
-      <h6 class="text_headers">Количество аккаунтов: {{accounts.length}} </h6>
+      <h6 class="text_headers">Количество аккаунтов: {{ accounts.length }} </h6>
       <ui-select outlined :options="options"></ui-select>
     </div>
     <div class="form-sections">
+      <p>Купить/Продать</p>
+      <div class="exchange-form">
+        <ui-select class="exchange-form__currencies" outlined :options="currencies" label="from"></ui-select>
+        <ui-select outlined :options="currencies" label="to"></ui-select>
+      </div>
 
     </div>
   </div>
@@ -28,13 +33,18 @@
 import { Options, Vue } from "vue-class-component";
 import Account from "src/models/Account";
 import AccountsApiService from "@/api/AccountsApiService";
+import { store } from "@/store/store";
+import Currencies from "@/models/Currencies";
+
 
 @Options({})
 export default class MainLayout extends Vue {
+  authentificated = false
   login = "";
   password = "";
   loading = true;
   accounts: Account[] = [];
+  currencies: Currencies[] = [];
   options: any[] = [{
     label: 'SOSAT SYUDA',
     value: 123,
@@ -42,15 +52,15 @@ export default class MainLayout extends Vue {
   accountsApiService: AccountsApiService = new AccountsApiService()
 
   getUserAccounts() {
-    this.accountsApiService.getAccounts().then(accounts => {
-      this.accounts = accounts
-      for (let account of this.accounts) {
-        this.options.push({
-          label: account.code.toString(),
-          value: account
-        })
-      }
-    }).catch(err => console.log(err))
+    // this.accountsApiService.getAccounts().then(accounts => {
+    //   this.accounts = accounts
+    //   for (let account of this.accounts) {
+    //     this.options.push({
+    //       label: account.code.toString(),
+    //       value: account
+    //     })
+    //   }
+    // }).catch(err => console.log(err))
   }
 
 }
@@ -82,5 +92,12 @@ export default class MainLayout extends Vue {
 .form-sections {
   margin-right: 20px;
   margin-top: 30px;
+}
+.exchange-form {
+  display: flex;
+  .exchange-form__currencies {
+    margin-right: 20px;
+  }
+
 }
 </style>

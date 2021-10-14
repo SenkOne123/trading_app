@@ -1,5 +1,3 @@
-import Vue from 'vue'
-import Vuex from 'vuex'
 import { Getters, Mutations, Module, createStore } from 'vuex-smart-module'
 import Account from "@/models/Account";
 
@@ -8,6 +6,7 @@ class State {
   token = ''
   user_accounts: Account[] = []
 }
+
 
 class SGetters extends Getters<State> {
   get permit(): boolean {
@@ -23,6 +22,9 @@ class SMutations extends Mutations<State> {
   permit(value: boolean) {
     this.state.permitState = value
   }
+  changeToken(value: string) {
+    this.state.token = value
+  }
 }
 
 export const store = createStore(
@@ -32,5 +34,3 @@ export const store = createStore(
     mutations: SMutations,
   })
 )
-
-// Vue.use(Vuex)
