@@ -4,14 +4,14 @@
     <div class="content-section">
       <div class="form-sections">
         <p class="text_headers">Login</p>
-        <ui-textfield outlined v-model="login"></ui-textfield>
+        <ui-textfield type="email" outlined v-model="login"></ui-textfield>
       </div>
       <div class="form-sections">
         <p class="text_headers">Password</p>
-        <ui-textfield outlined v-model="password"></ui-textfield>
+        <ui-textfield type="password" outlined v-model="password"></ui-textfield>
       </div>
       <div class="form-sections">
-        <ui-button @click="getUserAccounts" style="color: #1F1F1F;" outlined class="login__button">Get Accounts</ui-button>
+        <ui-button @click="getAuthToken" style="color: #1F1F1F;" outlined class="login__button">Get Accounts</ui-button>
       </div>
     </div>
     <div class="form-sections">
@@ -24,7 +24,6 @@
         <ui-select class="exchange-form__currencies" outlined :options="currencies" label="from"></ui-select>
         <ui-select outlined :options="currencies" label="to"></ui-select>
       </div>
-
     </div>
   </div>
 </template>
@@ -35,6 +34,7 @@ import Account from "src/models/Account";
 import AccountsApiService from "@/api/AccountsApiService";
 import { store } from "@/store/store";
 import Currencies from "@/models/Currencies";
+import AuthApiService from "@/api/AuthApiService";
 
 
 @Options({})
@@ -46,21 +46,28 @@ export default class MainLayout extends Vue {
   accounts: Account[] = [];
   currencies: Currencies[] = [];
   options: any[] = [{
-    label: 'SOSAT SYUDA',
+    label: 'ACCOUNT_1',
     value: 123,
   }]
   accountsApiService: AccountsApiService = new AccountsApiService()
+  authApiService: AuthApiService = new AuthApiService()
 
   getUserAccounts() {
-    // this.accountsApiService.getAccounts().then(accounts => {
-    //   this.accounts = accounts
-    //   for (let account of this.accounts) {
-    //     this.options.push({
-    //       label: account.code.toString(),
-    //       value: account
-    //     })
-    //   }
-    // }).catch(err => console.log(err))
+    this.accountsApiService.getAccounts().then(accounts => {
+      this.accounts = accounts
+      for (let account of this.accounts) {
+        this.options.push({
+          label: account.code.toString(),
+          value: account
+        })
+      }
+    }).catch(err => console.log(err))
+  }
+
+  getAuthToken() {
+    return this.authApiService.getAuthentificationToken().then( token =>  {
+      console.log(token)
+    })
   }
 
 }
