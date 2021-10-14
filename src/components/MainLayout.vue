@@ -11,7 +11,7 @@
         <ui-textfield type="password" outlined v-model="password"></ui-textfield>
       </div>
       <div class="form-sections">
-        <ui-button @click="getAuthToken" style="color: #1F1F1F;" outlined class="login__button">Get Accounts</ui-button>
+        <ui-button @click="getUserAccounts" style="color: #1F1F1F;" outlined class="login__button">Get Accounts</ui-button>
       </div>
     </div>
     <div class="form-sections">
@@ -49,11 +49,18 @@ export default class MainLayout extends Vue {
     label: 'ACCOUNT_1',
     value: 123,
   }]
+  token = ''
   accountsApiService: AccountsApiService = new AccountsApiService()
   authApiService: AuthApiService = new AuthApiService()
 
+  mounted() {
+    return this.authApiService.getAuthentificationToken().then(token => {
+      this.token = token
+    })
+  }
+
   getUserAccounts() {
-    this.accountsApiService.getAccounts().then(accounts => {
+    this.accountsApiService.getAccounts(this.token).then(accounts => {
       this.accounts = accounts
       for (let account of this.accounts) {
         this.options.push({
@@ -66,7 +73,7 @@ export default class MainLayout extends Vue {
 
   getAuthToken() {
     return this.authApiService.getAuthentificationToken().then( token =>  {
-      console.log(token)
+      this.token = token
     })
   }
 
