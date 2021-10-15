@@ -2,21 +2,21 @@
   <div class="container">
     <h1>SimpleFX App</h1>
     <div class="content-section">
-      <div class="form-sections">
-        <p class="text_headers">Login</p>
-        <ui-textfield type="email" outlined v-model="login"></ui-textfield>
-      </div>
-      <div class="form-sections">
-        <p class="text_headers">Password</p>
-        <ui-textfield type="password" outlined v-model="password"></ui-textfield>
-      </div>
-      <div class="form-sections">
-        <ui-button @click="getUserAccounts" style="color: #1F1F1F;" outlined class="login__button">Get Accounts</ui-button>
-      </div>
+<!--      <div class="form-sections">-->
+<!--        <p class="text_headers">Login</p>-->
+<!--        <ui-textfield type="email" outlined v-model="login"></ui-textfield>-->
+<!--      </div>-->
+<!--      <div class="form-sections">-->
+<!--        <p class="text_headers">Password</p>-->
+<!--        <ui-textfield type="password" outlined v-model="password"></ui-textfield>-->
+<!--      </div>-->
     </div>
     <div class="form-sections">
       <h6 class="text_headers">Количество аккаунтов: {{ accounts.length }} </h6>
       <ui-select outlined :options="options"></ui-select>
+      <div class="form-sections">
+        <ui-button @click="getUserAccounts" style="color: #1F1F1F;" outlined class="login__button">Get Accounts</ui-button>
+      </div>
     </div>
     <div class="form-sections">
       <p>Купить/Продать</p>
@@ -45,35 +45,32 @@ export default class MainLayout extends Vue {
   loading = true;
   accounts: Account[] = [];
   currencies: Currencies[] = [];
-  options: any[] = [{
-    label: 'ACCOUNT_1',
-    value: 123,
-  }]
+  options: any[] = []
+  options_buf : any[] = []
   token = ''
   accountsApiService: AccountsApiService = new AccountsApiService()
   authApiService: AuthApiService = new AuthApiService()
 
   mounted() {
-    return this.authApiService.getAuthentificationToken().then(token => {
-      this.token = token
-    })
+    this.getAuthToken()
   }
 
   getUserAccounts() {
     this.accountsApiService.getAccounts(this.token).then(accounts => {
       this.accounts = accounts
       for (let account of this.accounts) {
-        this.options.push({
-          label: account.code.toString(),
-          value: account
+        this.options_buf.push({
+          label: account.login.toString(),
+          value: account.balance
         })
       }
+      this.options = this.options_buf
     }).catch(err => console.log(err))
   }
 
   getAuthToken() {
-    return this.authApiService.getAuthentificationToken().then( token =>  {
-      this.token = token
+    return this.authApiService.getAuthentificationToken().then(token =>  {
+      this.token = token.data.token
     })
   }
 

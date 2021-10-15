@@ -12,6 +12,7 @@ export default class AccountsApiService {
           return response.json();
         } else throw Error;
       })
-      .catch((err) => err.json());
+      .then((r) => r.data)
+      .catch((err) => err);
   }
 }

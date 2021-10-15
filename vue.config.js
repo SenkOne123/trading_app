@@ -1,6 +1,6 @@
 // vue.config.js
 module.exports = {
-  publicPath: process.env.NODE_ENV === "production" ? "/trading_app/" : "/",
+  publicPath: "/trading_app/",
   runtimeCompiler: true,
   // NOTE: set alias via `configureWebpack` or `chainWebpack`
   configureWebpack: {
@@ -16,4 +16,5 @@ module.exports = {
   //     .set('balm-ui-plus', 'balm-ui/dist/balm-ui-plus.js')
   //     .set('balm-ui-css', 'balm-ui/dist/balm-ui.css');
   // }
+  // process.env.NODE_ENV === "production" ? "/trading_app/" : "/",
 };
