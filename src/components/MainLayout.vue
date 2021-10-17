@@ -22,7 +22,7 @@
                    label="to"></ui-select>
         <ui-textfield v-model="exchangeSum" class="exchange-form__currencies" outlined></ui-textfield>
         <ui-select v-model="exchangeMethod" class="exchange-form__currencies" :options="exchangeMethodOptions" outlined></ui-select>
-        <ui-button @click="exchange" outlined class="login__button" >Exchange</ui-button>
+        <ui-button @click="exchange" style="color: #1F1F1F;" outlined class="login__button" >Exchange</ui-button>
       </div>
     </div>
   </div>
