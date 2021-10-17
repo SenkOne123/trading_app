@@ -1,28 +1,28 @@
 <template>
   <div class="container">
     <h1>SimpleFX App</h1>
-    <div class="content-section">
-<!--      <div class="form-sections">-->
-<!--        <p class="text_headers">Login</p>-->
-<!--        <ui-textfield type="email" outlined v-model="login"></ui-textfield>-->
-<!--      </div>-->
-<!--      <div class="form-sections">-->
-<!--        <p class="text_headers">Password</p>-->
-<!--        <ui-textfield type="password" outlined v-model="password"></ui-textfield>-->
-<!--      </div>-->
-    </div>
-    <div class="form-sections">
-      <h6 class="text_headers">Количество аккаунтов: {{ accounts.length }} </h6>
-      <ui-select outlined :options="options"></ui-select>
+    <div style="align-items: center" class="content-section">
       <div class="form-sections">
-        <ui-button @click="getUserAccounts" style="color: #1F1F1F;" outlined class="login__button">Get Accounts</ui-button>
+        <h6 class="text_headers">Количество аккаунтов: {{ accounts.length }} </h6>
+      </div>
+      <div class="form-sections">
+        <ui-select v-model="account" outlined :options="options"></ui-select>
+      </div>
+      <div class="form-sections">
+        <ui-button @click="getUserAccounts" style="color: #1F1F1F;" outlined class="login__button">Get Accounts
+        </ui-button>
       </div>
     </div>
     <div class="form-sections">
       <p>Купить/Продать</p>
       <div class="exchange-form">
-        <ui-select class="exchange-form__currencies" outlined :options="currencies" label="from"></ui-select>
-        <ui-select outlined :options="currencies" label="to"></ui-select>
+        <ui-select v-model="currencyFrom" class="exchange-form__currencies" outlined :options="currencies"
+                   label="from"></ui-select>
+        <ui-select v-model="currencyTo" class="exchange-form__currencies" outlined :options="currencies"
+                   label="to"></ui-select>
+        <ui-textfield v-model="exchangeSum" class="exchange-form__currencies" outlined></ui-textfield>
+        <ui-select v-model="exchangeMethod" class="exchange-form__currencies" :options="exchangeMethodOptions" outlined></ui-select>
+        <ui-button @click="exchange" outlined class="login__button" >Exchange</ui-button>
       </div>
     </div>
   </div>
@@ -30,48 +30,76 @@
 
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
-import Account from "src/models/Account";
+import Account from "@/models/Account";
 import AccountsApiService from "@/api/AccountsApiService";
-import { store } from "@/store/store";
 import Currencies from "@/models/Currencies";
 import AuthApiService from "@/api/AuthApiService";
+import ExchangeApiService from "@/api/ExchangeApiService";
 
 
 @Options({})
 export default class MainLayout extends Vue {
-  authentificated = false
+  authentificated = false;
   login = "";
   password = "";
   loading = true;
   accounts: Account[] = [];
-  currencies: Currencies[] = [];
-  options: any[] = []
-  options_buf : any[] = []
-  token = ''
-  accountsApiService: AccountsApiService = new AccountsApiService()
-  authApiService: AuthApiService = new AuthApiService()
+  account: Account = new Account();
+  exchangeSum = 0;
+  currencies = [
+    {
+      label: "BTC",
+      value: "BTC"
+    },
+    {
+      label: "USD",
+      value: "USD"
+    }];
+  currencyFrom = "";
+  currencyTo = "";
+  options: any[] = [];
+  exchangeMethod = "";
+  exchangeMethodOptions = [
+    {
+      label: "BUY",
+      value: "BUY"
+    },
+    {
+      label: "SELL",
+      value: "SELL"
+    }];
+  options_buf: any[] = [];
+  token = "";
+  accountsApiService: AccountsApiService = new AccountsApiService();
+  authApiService: AuthApiService = new AuthApiService();
+  exchangeApiService: ExchangeApiService = new ExchangeApiService();
 
   mounted() {
-    this.getAuthToken()
+    this.getAuthToken();
   }
 
   getUserAccounts() {
-    this.accountsApiService.getAccounts(this.token).then(accounts => {
-      this.accounts = accounts
+    return this.accountsApiService.getAccounts(this.token).then(accounts => {
+      this.accounts = accounts;
       for (let account of this.accounts) {
         this.options_buf.push({
-          label: account.login.toString(),
-          value: account.balance
-        })
+          label: account.login,
+          value: account
+        });
       }
-      this.options = this.options_buf
-    }).catch(err => console.log(err))
+      this.options = this.options_buf;
+    }).catch(err => console.log(err));
+  }
+
+  exchange() {
+    return this.exchangeApiService.exchange(this.token, this.account, this.exchangeSum, this.currencyFrom, this.currencyTo, this.exchangeMethod)
+      .then(response => console.log(response));
   }
 
   getAuthToken() {
-    return this.authApiService.getAuthentificationToken().then(token =>  {
-      this.token = token.data.token
-    })
+    return this.authApiService.getAuthentificationToken().then(token => {
+      this.token = token.data.token;
+    });
   }
 
 }
@@ -104,8 +132,10 @@ export default class MainLayout extends Vue {
   margin-right: 20px;
   margin-top: 30px;
 }
+
 .exchange-form {
   display: flex;
+
   .exchange-form__currencies {
     margin-right: 20px;
   }
