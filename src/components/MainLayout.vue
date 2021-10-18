@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <h1>123/h1>
+    <h1>123</h1>
     <div style="align-items: center" class="content-section">
       <div class="form-sections">
         <h6 class="text_headers">Количество аккаунтов: {{ accounts.length }} </h6>
