@@ -3,6 +3,5 @@ export function getHeaders(token?: string): Headers {
     "Content-Type": "application/json; charset=UTF-8",
     Authorization: "Bearer " + token,
     Accept: "application/json",
-    "Access-Control-Allow-Origin": "https://rest.simplefx.com/",
   });
 }
