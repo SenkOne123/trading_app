@@ -4,9 +4,12 @@ import { getHeaders } from "@/utils/getDefaultHeaders";
 
 export default class AccountsApiService {
   getAccounts(token: string): Promise<Account[]> {
-    return fetch("https://rest.simplefx.com/api/v3/accounts", {
-      headers: getHeaders(token),
-    })
+    return fetch(
+      "https://intense-thicket-79155.herokuapp.com/https://rest.simplefx.com/api/v3/accounts",
+      {
+        headers: getHeaders(token),
+      }
+    )
       .then((response) => {
         if (response.ok) {
           return response.json();
