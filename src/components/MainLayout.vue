@@ -79,7 +79,7 @@ export default class MainLayout extends Vue {
   }
 
   getUserAccounts() {
-    return this.accountsApiService.getAccounts(this.token).then(accounts => {
+    return this.getAuthToken().then(() => this.accountsApiService.getAccounts(this.token).then(accounts => {
       this.accounts = accounts;
       for (let account of this.accounts) {
         this.options_buf.push({
@@ -88,7 +88,7 @@ export default class MainLayout extends Vue {
         });
       }
       this.options = this.options_buf;
-    }).catch(err => console.log(err));
+    }).catch(err => console.log(err)))
   }
 
   exchange() {
@@ -99,7 +99,7 @@ export default class MainLayout extends Vue {
   getAuthToken() {
     return this.authApiService.getAuthentificationToken().then(token => {
       this.token = token.data.token;
-    });
+    })
   }
 
 }
