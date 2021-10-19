@@ -5,7 +5,7 @@
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
 import MainLayout from "@/components/MainLayout.vue";
-import Vuex from "vuex";
+
 
 // Vue.use(Vuex)
 
@@ -15,7 +15,6 @@ import Vuex from "vuex";
   },
 })
 
-// Vue.use(Vuex)
 
 export default class App extends Vue {}
 </script>
