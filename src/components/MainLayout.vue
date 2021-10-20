@@ -4,16 +4,18 @@
     <div style="align-items: center" class="content-section">
       <div class="form-sections content-section">
         <div class="auth_sections">
-          <p>Client Id</p>
+          <p>Client id</p>
           <ui-textfield v-model="id" class="assets-form__currencies" outlined></ui-textfield>
         </div>
         <div class="auth_sections">
-          <p>Client Secret</p>
+          <p>Client secret</p>
           <ui-textfield v-model="secret" class="assets-form__currencies" outlined></ui-textfield>
         </div>
-        <div class="form-sections">
-          <p>Your accounts:</p>
-          <ui-select class="auth_sections" v-model="account" outlined :options="accountOptions"></ui-select>
+        <div class="auth_sections content-section">
+          <div>
+            <p>Your accounts:</p>
+            <ui-select class="auth_sections" v-model="account" outlined :options="accountOptions"></ui-select>
+          </div>
           <ui-button @click="getUserAccounts" style="color: #1F1F1F;" outlined class="login__button">Get Accounts
           </ui-button>
         </div>
@@ -40,11 +42,11 @@ import AccountsApiService from "@/api/AccountsApiService";
 import AuthApiService from "@/api/AuthApiService";
 import OrdersApiService from "@/api/OrdersApiService";
 
-
 @Options({})
 export default class MainLayout extends Vue {
   id = "";
   secret = "";
+
   loading = true;
   accounts: Account[] = [];
   account: Account = new Account();
@@ -76,19 +78,30 @@ export default class MainLayout extends Vue {
   authApiService: AuthApiService = new AuthApiService();
   ordersApiService: OrdersApiService = new OrdersApiService();
 
-  getUserAccounts() {
-    this.authApiService.getAuthentificationToken(this.id, this.secret).then(response => this.token = response.data.token)
-      .then(() =>
-        this.accountsApiService.getAccounts(this.token).then(accounts => {
-          this.accounts = accounts;
-          for (let account of this.accounts) {
-            this.accountOptions_buf.push({
-              label: account.login,
-              value: account
-            });
-          }
-          this.accountOptions = this.accountOptions_buf;
-        })).catch(err => console.log(err));
+  mounted() {
+    this.getCookie("TradingAuthToken");
+    if (this.token !== "") {
+      this.getUserAccounts()
+    }
+  }
+
+  async getUserAccounts() {
+    if (this.token === "") {
+      await this.authApiService.getAuthentificationToken(this.id, this.secret).then(response => {
+        this.token = response.data.token;
+        document.cookie = `TradingAuthToken=${this.token}; expires=` + this.expires;
+      });
+    }
+    this.accountsApiService.getAccounts(this.token).then(accounts => {
+      this.accounts = accounts;
+      for (let account of this.accounts) {
+        this.accountOptions_buf.push({
+          label: account.login,
+          value: account
+        });
+      }
+      this.accountOptions = this.accountOptions_buf;
+    }).catch(err => console.log(err));
   }
 
   open() {
@@ -96,6 +109,17 @@ export default class MainLayout extends Vue {
       .then(() => console.log("Successful!"));
   }
 
+  get expires() {
+    let date = new Date(Date.now() + 86400e3).toUTCString();
+    return date;
+  }
+
+  getCookie(name: string) {
+    let matches = document.cookie.match(new RegExp(
+      "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, "\\$1") + "=([^;]*)"
+    ));
+    return matches ? this.token = decodeURIComponent(matches[1]) : undefined;
+  }
 }
 </script>
 

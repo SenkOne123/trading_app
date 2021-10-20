@@ -7,8 +7,6 @@ import { Options, Vue } from "vue-class-component";
 import MainLayout from "@/components/MainLayout.vue";
 
 
-// Vue.use(Vuex)
-
 @Options({
   components: {
     MainLayout,

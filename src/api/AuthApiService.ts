@@ -11,8 +11,8 @@ export default class AuthApiService {
         method: "POST",
         headers: getHeaders(),
         body: JSON.stringify({
-          clientId: "7258c3d936e346eca2f8f23ee27c1bfb",
-          clientSecret: "05b4de65-03c8-43a9-8709-97db662db33b",
+          clientId: clientId,
+          clientSecret: clientSecret,
         }),
       }
     )
