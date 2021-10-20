@@ -2,27 +2,32 @@
   <div class="container">
     <h1>SimpleFX App</h1>
     <div style="align-items: center" class="content-section">
-      <div class="form-sections">
-        <h6 class="text_headers">Количество аккаунтов: {{ accounts.length }} </h6>
-      </div>
-      <div class="form-sections">
-        <ui-select v-model="account" outlined :options="options"></ui-select>
-      </div>
-      <div class="form-sections">
-        <ui-button @click="getUserAccounts" style="color: #1F1F1F;" outlined class="login__button">Get Accounts
-        </ui-button>
+      <div class="form-sections content-section">
+        <div class="auth_sections">
+          <p>Client Id</p>
+          <ui-textfield v-model="id" class="assets-form__currencies" outlined></ui-textfield>
+        </div>
+        <div class="auth_sections">
+          <p>Client Secret</p>
+          <ui-textfield v-model="secret" class="assets-form__currencies" outlined></ui-textfield>
+        </div>
+        <div class="form-sections">
+          <p>Your accounts:</p>
+          <ui-select class="auth_sections" v-model="account" outlined :options="accountOptions"></ui-select>
+          <ui-button @click="getUserAccounts" style="color: #1F1F1F;" outlined class="login__button">Get Accounts
+          </ui-button>
+        </div>
       </div>
     </div>
     <div class="form-sections">
       <p>Купить/Продать</p>
-      <div class="exchange-form">
-        <ui-select v-model="currencyFrom" class="exchange-form__currencies" outlined :options="currencies"
-                   label="from"></ui-select>
-        <ui-select v-model="currencyTo" class="exchange-form__currencies" outlined :options="currencies"
-                   label="to"></ui-select>
-        <ui-textfield v-model="exchangeSum" class="exchange-form__currencies" outlined></ui-textfield>
-        <ui-select v-model="exchangeMethod" class="exchange-form__currencies" :options="exchangeMethodOptions" outlined></ui-select>
-        <ui-button @click="exchange" style="color: #1F1F1F;" outlined class="login__button" >Exchange</ui-button>
+      <div class="assets-form">
+        <ui-select v-model="asset" class="assets-form__currencies" :options="assetsOptions" outlined></ui-select>
+        <ui-textfield v-model="sum" class="assets-form__currencies" outlined></ui-textfield>
+        <ui-select v-model="assetMethod" class="assets-form__currencies" :options="assetMethodOptions"
+                   outlined></ui-select>
+        <ui-button @click="open" style="color: #1F1F1F;" outlined class="login__button assets-form__currencies">Open
+        </ui-button>
       </div>
     </div>
   </div>
@@ -32,34 +37,30 @@
 import { Options, Vue } from "vue-class-component";
 import Account from "@/models/Account";
 import AccountsApiService from "@/api/AccountsApiService";
-import Currencies from "@/models/Currencies";
 import AuthApiService from "@/api/AuthApiService";
-import ExchangeApiService from "@/api/ExchangeApiService";
+import OrdersApiService from "@/api/OrdersApiService";
 
 
 @Options({})
 export default class MainLayout extends Vue {
-  authentificated = false;
-  login = "";
-  password = "";
+  id = "";
+  secret = "";
   loading = true;
   accounts: Account[] = [];
   account: Account = new Account();
-  exchangeSum = 0;
-  currencies = [
+  sum = 0;
+  assetsOptions = [
     {
-      label: "BTC",
-      value: "BTC"
+      label: "BTCUSD",
+      value: "BTCUSD"
     },
     {
-      label: "USD",
-      value: "USD"
+      label: "EURUSD",
+      value: "EURUSD"
     }];
-  currencyFrom = "";
-  currencyTo = "";
-  options: any[] = [];
-  exchangeMethod = "";
-  exchangeMethodOptions = [
+  asset = "";
+  accountOptions: any[] = [];
+  assetMethodOptions = [
     {
       label: "BUY",
       value: "BUY"
@@ -68,44 +69,45 @@ export default class MainLayout extends Vue {
       label: "SELL",
       value: "SELL"
     }];
-  options_buf: any[] = [];
+  assetMethod = "";
+  accountOptions_buf: any[] = [];
   token = "";
   accountsApiService: AccountsApiService = new AccountsApiService();
   authApiService: AuthApiService = new AuthApiService();
-  exchangeApiService: ExchangeApiService = new ExchangeApiService();
-
-  mounted() {
-    this.getAuthToken();
-  }
+  ordersApiService: OrdersApiService = new OrdersApiService();
 
   getUserAccounts() {
-    return this.accountsApiService.getAccounts(this.token).then(accounts => {
-      this.accounts = accounts;
-      for (let account of this.accounts) {
-        this.options_buf.push({
-          label: account.login,
-          value: account
-        });
-      }
-      this.options = this.options_buf;
-    }).catch(err => console.log(err));
+    this.authApiService.getAuthentificationToken(this.id, this.secret).then(response => this.token = response.data.token)
+      .then(() =>
+        this.accountsApiService.getAccounts(this.token).then(accounts => {
+          this.accounts = accounts;
+          for (let account of this.accounts) {
+            this.accountOptions_buf.push({
+              label: account.login,
+              value: account
+            });
+          }
+          this.accountOptions = this.accountOptions_buf;
+        })).catch(err => console.log(err));
   }
 
-  exchange() {
-    return this.exchangeApiService.exchange(this.token, this.account, this.exchangeSum, this.currencyFrom, this.currencyTo, this.exchangeMethod)
-      .then(response => console.log(response));
-  }
-
-  getAuthToken() {
-    return this.authApiService.getAuthentificationToken().then(token => {
-      this.token = token.data.token;
-    });
+  open() {
+    return this.ordersApiService.exchange(this.token, this.account, this.sum, this.asset, this.assetMethod)
+      .then(() => console.log("Successful!"));
   }
 
 }
 </script>
 
 <style scoped lang="scss">
+
+.auth_sections {
+  margin-right: 15px;
+
+  .auth_header {
+    margin-bottom: 20px;
+  }
+}
 
 .content-section {
   display: flex;
@@ -133,11 +135,12 @@ export default class MainLayout extends Vue {
   margin-top: 30px;
 }
 
-.exchange-form {
+.assets-form {
   display: flex;
+  flex-direction: column;
 
-  .exchange-form__currencies {
-    margin-right: 20px;
+  .assets-form__currencies {
+    margin-top: 20px;
   }
 
 }

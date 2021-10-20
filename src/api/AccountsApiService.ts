@@ -1,4 +1,3 @@
-import { LINKS } from "@/models/LINKS";
 import Account from "@/models/Account";
 import { getHeaders } from "@/utils/getDefaultHeaders";
 

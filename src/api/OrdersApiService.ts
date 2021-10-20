@@ -1,13 +1,12 @@
 import { getHeaders } from "@/utils/getDefaultHeaders";
 import Account from "@/models/Account";
 
-export default class ExchangeApiService {
+export default class OrdersApiService {
   exchange(
     token: string,
     account: Account,
     sum: number,
-    currencyFrom: string,
-    currencyTo: string,
+    asset: string,
     buyOrSell: string
   ): Promise<string> {
     return fetch(
@@ -18,7 +17,7 @@ export default class ExchangeApiService {
         body: JSON.stringify({
           Reality: account.reality,
           Login: account.login,
-          Symbol: currencyFrom + currencyTo,
+          Symbol: asset,
           Side: buyOrSell,
           Volume: sum,
         }),
